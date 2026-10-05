@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff8e7"><link rel="manifest" href="manifest.webmanifest"><title>CK 전국 맛집지도</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;background:#fffaf0;color:#222}.app{max-width:720px;margin:auto;min-height:100vh}.head{padding:18px 16px 12px;background:#fff3cf;border-bottom:1px solid #eadbb5}.brand{display:flex;align-items:center;gap:12px}.logo{width:58px;height:58px;border-radius:50%;background:#fff;border:2px solid #e6b84f;display:grid;place-items:center;font-weight:900;color:#b34b00}.title{font-size:24px;font-weight:900}.sub{font-size:12px;color:#765;margin-top:2px}.search{width:100%;margin-top:14px;padding:13px 15px;border:1px solid #d8c9a7;border-radius:14px;font-size:16px;background:white}.section{padding:12px 14px}.label{font-weight:800;margin:2px 0 8px}.chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px}.chip{border:1px solid #dccda8;background:#fff;border-radius:999px;padding:9px 12px;white-space:nowrap;font-size:14px}.chip.active{background:#222;color:#fff;border-color:#222}.subcats{display:none;flex-wrap:wrap;gap:8px;margin-top:9px}.subcats.show{display:flex}.map{height:43vh;min-height:310px;margin:0 14px;border-radius:18px;overflow:hidden;border:1px solid #ddd;background:#eef3e8;position:relative}.map iframe{width:100%;height:100%;border:0}.badge{position:absolute;z-index:2;left:10px;top:10px;background:white;padding:7px 10px;border-radius:10px;box-shadow:0 2px 8px #0002;font-size:13px}.cards{padding:12px 14px 90px}.card{background:#fff;border:1px solid #eadfc7;border-radius:16px;padding:13px;margin-bottom:10px}.card b{font-size:17px}.muted{color:#777;font-size:13px}.empty{text-align:center;color:#777;padding:20px}.install{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(92%,680px);border:0;border-radius:15px;padding:13px;background:#111;color:#fff;font-weight:800;font-size:15px}
+</style></head><body><div class="app">
+<header class="head"><div class="brand"><div class="logo">CK</div><div><div class="title">CK 전국 맛집지도</div><div class="sub">전국 맛집 검색 · 음식별 세부분류 · 휴대폰 홈 화면 사용</div></div></div><input id="q" class="search" placeholder="식당명·지역·음식 검색"></header>
+<section class="section"><div class="label">📍 지역</div><div class="chips" id="regions"></div></section>
+<section class="section"><div class="label">🍽️ 음식</div><div class="chips" id="foods"></div><div class="subcats" id="subcats"></div></section>
+<div class="map"><div class="badge">🗺️ 대한민국 전국 지도</div><iframe title="대한민국 지도" src="https://www.openstreetmap.org/export/embed.html?bbox=124.3%2C32.8%2C131.9%2C38.8&amp;layer=mapnik"></iframe></div>
+<div class="cards"><div class="label">맛집 목록</div><div id="list" class="empty">검증된 맛집 데이터를 준비 중입니다.<br>확인되지 않은 식당 정보는 표시하지 않습니다.</div></div>
+<button id="install" class="install">📲 홈 화면에 앱으로 설치</button></div>
+<script>
+const regions=["전국","서울·경기","강원","충청","전라","경상","제주"];
+const cats={
+"전체 음식":[],
+"한식":["백반·가정식","국밥·탕·찌개","전골","한정식","비빔밥","죽","족발·보쌈"],
+"고기":["소고기","돼지고기","닭고기","오리고기","양고기","곱창·막창"],
+"회·해산물":["생선회","물회","해물탕·찜","조개·굴","게·대게","장어","생선구이"],
+"분식":["떡볶이","김밥","튀김","순대","만두","어묵"],
+"면류":["냉면","칼국수","국수","막국수","수제비","라면","우동"],
+"양식":["스테이크","파스타","피자","돈가스","햄버거","브런치"],
+"중식":["짜장면","짬뽕","탕수육","만두·딤섬","마라"],
+"일식":["초밥","사시미","라멘","우동","돈카츠","덮밥"],
+"카페·디저트":["커피","빵·베이커리","떡·한과","빙수","디저트"],
+"기타":["퓨전","세계음식","채식"]
+};
+let selected="전체 음식";
+function buttons(el,arr,fn){el.innerHTML="";arr.forEach((x,i)=>{let b=document.createElement("button");b.className="chip"+(i===0?" active":"");b.textContent=x;b.onclick=()=>{[...el.children].forEach(v=>v.classList.remove("active"));b.classList.add("active");fn&&fn(x)};el.appendChild(b)})}
+buttons(document.querySelector("#regions"),regions);
+buttons(document.querySelector("#foods"),Object.keys(cats),(x)=>{selected=x;let s=document.querySelector("#subcats");s.innerHTML="";if(cats[x].length){s.classList.add("show");cats[x].forEach(v=>{let b=document.createElement("button");b.className="chip";b.textContent=v;b.onclick=()=>{[...s.children].forEach(z=>z.classList.remove("active"));b.classList.add("active")};s.appendChild(b)})}else s.classList.remove("show")});
+let deferred;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});
+document.querySelector("#install").onclick=async()=>{if(deferred){deferred.prompt();deferred=null}else alert("Android: 브라우저 메뉴 → 홈 화면에 추가\niPhone: Safari 공유 → 홈 화면에 추가")};
+if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js");
+</script></body></html>
